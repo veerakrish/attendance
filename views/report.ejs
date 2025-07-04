@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #0066cc;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .percentage-good {
+            color: green;
+        }
+        .percentage-warning {
+            color: orange;
+        }
+        .percentage-danger {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="/">Mark Attendance</a>
+        <a href="/attendance-report">View Report</a>
+    </div>
+
+    <h2>Attendance Report</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Total Days</th>
+                <th>Present Days</th>
+                <th>Total Hours</th>
+                <th>Attendance %</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% report.forEach(student => { %>
+                <tr>
+                    <td><%= student.roll_no %></td>
+                    <td><%= student.name %></td>
+                    <td><%= student.total_days %></td>
+                    <td><%= student.present_days %></td>
+                    <td><%= student.total_hours %></td>
+                    <td class="<%= 
+                        student.percentage >= 75 ? 'percentage-good' : 
+                        student.percentage >= 65 ? 'percentage-warning' : 
+                        'percentage-danger' 
+                    %>">
+                        <%= student.percentage %>%
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>
