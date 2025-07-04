@@ -25,9 +25,13 @@ app.get('/health', (req, res) => {
 });
 
 // Database setup
-const dbPath = process.env.RAILWAY_VOLUME_MOUNT_PATH 
-    ? `${process.env.RAILWAY_VOLUME_MOUNT_PATH}/attendance.db`
-    : '/data/attendance.db';
+// Ensure data directory exists
+const dataDir = '/data';
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+}
+
+const dbPath = path.join(dataDir, 'attendance.db');
 
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
