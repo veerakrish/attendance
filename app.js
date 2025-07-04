@@ -8,7 +8,8 @@ const moment = require('moment');
 const multer = require('multer');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
+console.log('Using port:', port);
 
 // Middleware
 app.set('view engine', 'ejs');
