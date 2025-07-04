@@ -16,7 +16,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Database setup
-const db = new sqlite3.Database('attendance.db', (err) => {
+const dbPath = process.env.RAILWAY_VOLUME_MOUNT_PATH 
+    ? `${process.env.RAILWAY_VOLUME_MOUNT_PATH}/attendance.db`
+    : './attendance.db';
+
+const db = new sqlite3.Database(dbPath, (err) => {
     if (err) console.error(err.message);
     console.log('Connected to the attendance database.');
 });
