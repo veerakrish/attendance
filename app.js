@@ -27,7 +27,7 @@ app.get('/health', (req, res) => {
 // Database setup
 const dbPath = process.env.RAILWAY_VOLUME_MOUNT_PATH 
     ? `${process.env.RAILWAY_VOLUME_MOUNT_PATH}/attendance.db`
-    : './attendance.db';
+    : '/data/attendance.db';
 
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
