@@ -19,14 +19,23 @@ app.use(bodyParser.json());
 // Configure multer for file upload
 const upload = multer({ dest: 'uploads/' });
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
+
 // Database setup
 const dbPath = process.env.RAILWAY_VOLUME_MOUNT_PATH 
     ? `${process.env.RAILWAY_VOLUME_MOUNT_PATH}/attendance.db`
     : './attendance.db';
 
 const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) console.error(err.message);
-    console.log('Connected to the attendance database.');
+    if (err) {
+        console.error('Database connection error:', err.message);
+        // Don't exit the process, just log the error
+    } else {
+        console.log('Connected to the attendance database.');
+    }
 });
 
 // Create tables
