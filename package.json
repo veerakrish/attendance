@@ -4,7 +4,8 @@
   "description": "Student Attendance Management System",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "build": "echo \"No build process required\""
   },
   "dependencies": {
     "express": "^4.18.2",
