@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
 const moment = require('moment');
+const multer = require('multer');
 
 const app = express();
 const port = 3000;
@@ -14,6 +15,9 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Configure multer for file upload
+const upload = multer({ dest: 'uploads/' });
 
 // Database setup
 const dbPath = process.env.RAILWAY_VOLUME_MOUNT_PATH 
@@ -45,7 +49,7 @@ db.serialize(() => {
 });
 
 // Function to load students from CSV
-function loadStudentsFromCSV() {
+function loadStudentsFromCSV(filePath) {
     return new Promise((resolve, reject) => {
         // First, clear existing students
         db.run('DELETE FROM students', [], (err) => {
@@ -60,7 +64,7 @@ function loadStudentsFromCSV() {
             let duplicates = [];
             let processedRollNumbers = new Set();
 
-            fs.createReadStream('rolllist.csv')
+            fs.createReadStream(filePath)
                 .pipe(csv())
                 .on('data', (row) => {
                     const rollNo = row['RegdNo'];
@@ -117,12 +121,36 @@ function loadStudentsFromCSV() {
     });
 }
 
-// Load students when the application starts
-loadStudentsFromCSV().then(() => {
-    console.log('Initial student data load completed.');
-}).catch(err => {
-    console.error('Failed to load student data:', err);
+// Add upload route
+app.get('/upload', (req, res) => {
+    res.render('upload');
 });
+
+app.post('/upload', upload.single('csvFile'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).send('No file uploaded.');
+    }
+
+    loadStudentsFromCSV(req.file.path)
+        .then(() => {
+            // Delete the uploaded file after processing
+            fs.unlink(req.file.path, (err) => {
+                if (err) console.error('Error deleting file:', err);
+            });
+            res.redirect('/');
+        })
+        .catch(err => {
+            res.status(500).send('Error processing file: ' + err.message);
+        });
+});
+
+// Create uploads directory if it doesn't exist
+if (!fs.existsSync('uploads')) {
+    fs.mkdirSync('uploads');
+}
+
+// Initialize without CSV
+console.log('Server initialized without initial student data.');
 
 // Routes
 app.get('/', (req, res) => {
